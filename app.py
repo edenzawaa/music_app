@@ -92,4 +92,6 @@ def status():
 
 if __name__ == '__main__':
     sync_music()  # fetch songs from GitHub on startup
-    app.run(host='0.0.0.0', port=80)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
+
