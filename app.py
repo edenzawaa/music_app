@@ -19,6 +19,9 @@ MUSIC_DIR = "music"     # local directory
 
 # Ensure music directory exists
 os.makedirs(MUSIC_DIR, exist_ok=True)
+for root, dirs, files in os.walk("."):
+    print("DIR:", root, "FILES:", files)
+
 
 # Playlist state
 playlist = []
@@ -26,31 +29,9 @@ current_index = 0
 
 def sync_music():
     global playlist
-    url = f"https://api.github.com/repos/{GITHUB_USER}/{GITHUB_REPO}/contents/{GITHUB_PATH}"
-    resp = requests.get(url)
-    print("🔗 GitHub API status:", resp.status_code)
-    if resp.status_code != 200:
-        print("❌ Failed:", resp.text[:200])
-        return
-
-    files = resp.json()
-    for f in files:
-        if f["name"].endswith(".mp3"):
-            download_url = f["download_url"]
-            local_path = os.path.join(MUSIC_DIR, f["name"])
-            print(f"➡️ Preparing to download: {download_url}")
-            try:
-                if not os.path.exists(local_path):
-                    song = requests.get(download_url)
-                    print(f"📥 Download status: {song.status_code}")
-                    with open(local_path, "wb") as out:
-                        out.write(song.content)
-                    print(f"✅ Saved: {local_path}")
-            except Exception as e:
-                print("❌ Download error:", e)
-
     playlist = sorted([f for f in os.listdir(MUSIC_DIR) if f.endswith(".mp3")])
-    print("🎶 Playlist after sync:", playlist)
+    print("🎶 Playlist loaded:", playlist)
+
 
 
 def get_current_file():
@@ -91,8 +72,6 @@ def prev_track():
         return jsonify({"error": "Playlist is empty"}), 404
     current_index = (current_index - 1) % len(playlist)
     return jsonify({"current": playlist[current_index]})
-
-
 
 @app.route('/status')
 def status():
