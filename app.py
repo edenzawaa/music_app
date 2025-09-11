@@ -68,17 +68,19 @@ def stream():
 @app.route('/next', methods=["POST", "GET"])
 def next_track():
     global current_index
-    if playlist:
-        current_index = (current_index + 1) % len(playlist)
+    if not playlist:
+        return jsonify({"error": "Playlist is empty"}), 404
+    current_index = (current_index + 1) % len(playlist)
     return jsonify({"current": playlist[current_index]})
-
 
 @app.route('/prev', methods=["POST", "GET"])
 def prev_track():
     global current_index
-    if playlist:
-        current_index = (current_index - 1) % len(playlist)
+    if not playlist:
+        return jsonify({"error": "Playlist is empty"}), 404
+    current_index = (current_index - 1) % len(playlist)
     return jsonify({"current": playlist[current_index]})
+
 
 
 @app.route('/status')
