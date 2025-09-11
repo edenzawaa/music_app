@@ -40,13 +40,14 @@ def sync_music():
 
     # Build playlist after sync
     playlist = sorted([f for f in os.listdir(MUSIC_DIR) if f.endswith(".mp3")])
+    if not playlist: print("⚠ No MP3 files found. Check GITHUB_USER, GITHUB_REPO, GITHUB_PATH.")
     print("Playlist loaded:", playlist)
 
-
 def get_current_file():
-    if not playlist:
+    if not playlist or current_index >= len(playlist):
         return None
     return os.path.join(MUSIC_DIR, playlist[current_index])
+
 
 
 @app.route('/stream')
