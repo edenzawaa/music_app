@@ -18,13 +18,12 @@ playlist = []
 current_index = 0
 
 def sync_music():
-    #fetches all song from repo and save in into the music folder
     global playlist
     url = f"https://api.github.com/repos/{GITHUB_USER}/{GITHUB_REPO}/contents/{GITHUB_PATH}"
     resp = requests.get(url)
-
+    print("🔗 GitHub API status:", resp.status_code)
     if resp.status_code != 200:
-        print("❌ Failed to fetch from GitHub:", resp.text)
+        print("❌ Failed:", resp.text[:200])
         return
 
     files = resp.json()
@@ -32,16 +31,20 @@ def sync_music():
         if f["name"].endswith(".mp3"):
             download_url = f["download_url"]
             local_path = os.path.join(MUSIC_DIR, f["name"])
-            if not os.path.exists(local_path):  # skip if already downloaded
-                print(f"⬇️ Downloading {f['name']}...")
-                song = requests.get(download_url)
-                with open(local_path, "wb") as out:
-                    out.write(song.content)
+            print(f"➡️ Preparing to download: {download_url}")
+            try:
+                if not os.path.exists(local_path):
+                    song = requests.get(download_url)
+                    print(f"📥 Download status: {song.status_code}")
+                    with open(local_path, "wb") as out:
+                        out.write(song.content)
+                    print(f"✅ Saved: {local_path}")
+            except Exception as e:
+                print("❌ Download error:", e)
 
-    # Build playlist after sync
     playlist = sorted([f for f in os.listdir(MUSIC_DIR) if f.endswith(".mp3")])
-    if not playlist: print("⚠ No MP3 files found. Check GITHUB_USER, GITHUB_REPO, GITHUB_PATH.")
-    print("Playlist loaded:", playlist)
+    print("🎶 Playlist after sync:", playlist)
+
 
 def get_current_file():
     if not playlist or current_index >= len(playlist):
