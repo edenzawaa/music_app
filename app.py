@@ -50,7 +50,7 @@ def stream():
     def generate():
         with open(filepath, "rb") as f:
             while True:
-                chunk = f.read(4096)
+                chunk = f.read(8192)
                 if not chunk:
                     break
                 yield chunk
