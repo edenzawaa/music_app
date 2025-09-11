@@ -30,6 +30,12 @@ def sync_music():
     print("🎶 Playlist loaded:", playlist)
     return playlist;
 
+sync_music()
+
+def home():
+    return jsonify({"message": "Flask music streamer running", "tracks": len(playlist)})
+    
+
 def get_current_file():
     if not playlist or current_index >= len(playlist):
         return None
