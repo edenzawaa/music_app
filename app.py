@@ -12,9 +12,6 @@ print("📁 Music directory contents:", os.listdir("music") if os.path.exists("m
 app = Flask(__name__)
 
 # 🔹 Configuration
-GITHUB_USER = "edenzawaa"
-GITHUB_REPO = "music_host"
-GITHUB_PATH = "clean"   # folder in repo where mp3s are stored
 MUSIC_DIR = "music"     # local directory
 
 # Ensure music directory exists
@@ -31,15 +28,12 @@ def sync_music():
     global playlist
     playlist = sorted([f for f in os.listdir(MUSIC_DIR) if f.endswith(".mp3")])
     print("🎶 Playlist loaded:", playlist)
-
-
+    return playlist;
 
 def get_current_file():
     if not playlist or current_index >= len(playlist):
         return None
     return os.path.join(MUSIC_DIR, playlist[current_index])
-
-
 
 @app.route('/stream')
 def stream():
@@ -83,7 +77,7 @@ def status():
 #incase if i want to add a ips display for current song later
 
 if __name__ == '__main__':
-    sync_music()  # fetch songs from GitHub on startup
+    sync_music()  # initilize playlist 
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
 
